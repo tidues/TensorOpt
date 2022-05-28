@@ -2,16 +2,27 @@ import numpy as np
 import gurobipy as gp
 import warnings
 
-# create array using provided function and parameters
+# recursive: create array using provided function and parameters
+# def mkarr_h(size, func, params={}, idx=[]):
+#     if len(size) > 0:
+#         dim = size[0]
+#         res = []
+#         for tidx in range(dim):
+#             res.append(mkarr_h(size[1:], func, params=params, idx=idx + [tidx]))
+#         return res
+#     else:
+#         return func(idx, **params)
+
+
+# non_recursive: create array using provided function and parameters
 def mkarr_h(size, func, params={}, idx=[]):
-    if len(size) > 0:
-        dim = size[0]
-        res = []
-        for tidx in range(dim):
-            res.append(mkarr_h(size[1:], func, params=params, idx=idx + [tidx]))
-        return res
-    else:
+    if len(size) == 0:
         return func(idx, **params)
+    arr = np.empty(tuple(size), dtype=object)
+    with np.nditer(arr, flags=['multi_index', 'refs_ok'], op_flags=['writeonly']) as it:
+        for x in it:
+            x[...] = func(list(it.multi_index), **params)
+    return arr
 
 
 def mkarr(size, func, params={}):
@@ -35,6 +46,12 @@ class Model:
             "C": gp.GRB.CONTINUOUS, 
             "B": gp.GRB.BINARY,
             "I": gp.GRB.INTEGER
+        }
+        self.status = {
+            gp.GRB.OPTIMAL: 'OPTIMAL', 
+            gp.GRB.INFEASIBLE: 'INFEASIBLE', 
+            gp.GRB.INF_OR_UNBD: 'INF_OR_UNBD', 
+            gp.GRB.UNBOUNDED: 'UNBOUNDED', 
         }
         self.varidx = 0
         self.vars = {}
@@ -96,7 +113,14 @@ class Model:
         except (TypeError, ValueError):
             raise ValueError('Incorrect parameters or values.')  
         self.md.optimize()
-        return self.md.objVal
+        status = self.md.status
+        if status == 2:
+            return self.md.objVal
+        else:
+            if status in self.status:
+                return self.status[status]
+            else:
+                return 'STATUS CODE: ' + str(status)
 
     # get variable values
     def var_val(self, var):
