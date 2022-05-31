@@ -1,17 +1,17 @@
 import numpy as np
 import gurobipy as gp
 import warnings
+from itertools import product
 
-# recursive: create array using provided function and parameters
-# def mkarr_h(size, func, params={}, idx=[]):
-#     if len(size) > 0:
-#         dim = size[0]
-#         res = []
-#         for tidx in range(dim):
-#             res.append(mkarr_h(size[1:], func, params=params, idx=idx + [tidx]))
-#         return res
-#     else:
-#         return func(idx, **params)
+
+# generate indexs from shape
+def shape2idx(shape):
+    return product(*map(range, shape))
+
+
+# index to name
+def idx2name(idx):
+    return str(list(idx)).replace(' ', '')
 
 
 # non_recursive: create array using provided function and parameters
@@ -55,8 +55,10 @@ class Model:
         }
         self.varidx = 0
         self.vars = {}
+        self.varsidx = {}
         self.conidx = 0
         self.cons = {}
+        self.considx = {}
 
     def var(self, size=[], lb=-float('inf'), ub=float('inf'), vtype='C', name=""):
         if name is None or name == "":
@@ -65,6 +67,7 @@ class Model:
         # create the array of vars
         params = {'lb':lb, 'ub':ub, 'vtype':vtype, 'name':name}
         self.vars[name] = mkarr(size, self._var_func, params=params)
+        self.varsidx[name] = list(shape2idx(self.vars[name].shape))
         return self.vars[name]
 
     # any array of expressions with compatible rhs array
@@ -80,6 +83,7 @@ class Model:
         else:
             size = []
         self.cons[name] = mkarr(size, self._con_func, params=params)
+        self.considx[name] = list(shape2idx(self.cons[name].shape))
         return self.cons[name]
 
     # add a set of constraints
@@ -130,22 +134,23 @@ class Model:
             var = self.vars[var]
         return func_vec(var)
 
+
     # create single variable from parameters
     def _var_func(self, idx, lb, ub, vtype, name):
         if len(idx) == 0:
-            name = name
+            vname = name
         else:
-            name = name+str(idx)
-        return self.md.addVar(lb=lb, ub=ub, vtype=self.typemap[vtype], name=name)
+            vname = name + idx2name(idx)
+        return self.md.addVar(lb=lb, ub=ub, vtype=self.typemap[vtype], name=vname)
 
     # create single constraint from parameters
     def _con_func(self, idx, exprs, sense, name):
         if len(idx) == 0:
             expr = exprs
-            name = name
+            cname = name
         else:
             expr = exprs[tuple(idx)]
-            name = name+str(idx)
+            cname = name + idx2name(idx)
         if sense == '=' or sense == '==':
             con = expr == 0
         elif sense == '<=':
@@ -154,4 +159,4 @@ class Model:
             con = expr >= 0
         else:
             warnings.warn('Input "sense" should be =, >=, or <=.')
-        return self.md.addConstr(con, name=name)
+        return self.md.addConstr(con, name=cname)
