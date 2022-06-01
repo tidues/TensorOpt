@@ -5,11 +5,6 @@ from itertools import product
 from types import GeneratorType
 
 
-# index to name
-def idx2name(idx):
-    return str(list(idx)).replace(' ', '')
-
-
 # main model
 class Model:
     def __init__(self, name=""):
@@ -34,17 +29,20 @@ class Model:
         self.considx = {}
 
     def var(self, shape, lb=-float('inf'), ub=float('inf'), vtype='C', name=""):
-        if name is None or name == "":
-            name = "var" + str(self.varidx)
-            self.varidx += 1
         # create the array of vars
         if isinstance(shape, (int, np.integer)):
             shape = (int(shape),)
         elif type(shape) is not tuple:
             shape = tuple(shape)
-        params = {'lb':lb, 'ub':ub, 'vtype':vtype, 'name':name}
-        self.vars[name] = self.md.addMVar(shape, **params)
-        return self.vars[name]
+        if name is None or name == "":
+            params = {'lb':lb, 'ub':ub, 'vtype':vtype}
+            res = self.md.addMVar(shape, **params)
+        else:
+            params = {'lb':lb, 'ub':ub, 'vtype':vtype, 'name':name}
+            res = self.md.addMVar(shape, **params)
+            # only save the named variables
+            self.vars[name] = res
+        return res
 
     def idxNameDict(self, items, itemType='var'):
         res = {}
@@ -72,13 +70,17 @@ class Model:
     # sense "=", ">=", or "<="
     def con(self, exprs, name=""):
         if name is None or name == "":
-            name = "con" + str(self.conidx)
-            self.conidx += 1
-        if isinstance(exprs, GeneratorType):
-            self.cons[name] = self.md.addConstrs(exprs, name=name)
+            params = {}
         else:
-            self.cons[name] = self.md.addConstr(exprs, name=name)
-        return self.cons[name]
+            params = {'name': name}
+        if isinstance(exprs, GeneratorType):
+            res = self.md.addConstrs(exprs, **params)
+        else:
+            res = self.md.addConstr(exprs, **params)
+        if name is not None and name != "":
+            # only save the named constraints
+            self.cons[name] = res
+        return res
 
     # update model
     # vars/cons-idx_update: update name list ['key1', 'key2']
