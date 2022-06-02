@@ -17,6 +17,8 @@ $$
 $$
 
 We can use the following code.
+
+
     from tensorgrb import Model
     import numpy as np
     
