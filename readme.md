@@ -10,8 +10,8 @@ The follow is the formulation to be constructed.
 
 $$
 \begin{align}
-\min & \langle C, X \rangle + \text{diag}(B, Y)\\
-\test{s.t.} & A X^\intercal \leq B^\intercal Y\\
-            &  X, Y \geq 0.
+\min & \quad \langle C, X \rangle + \text{diag}(B, Y)\\
+\text{s.t.} & \quad A X^\intercal \leq B^\intercal Y\\
+            & \quad X, Y \geq 0.
 \end{align}
 $$
