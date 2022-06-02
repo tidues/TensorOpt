@@ -8,4 +8,6 @@ The other module `tensorgp.py` uses Gurobi's native matrix api. The construction
 ## Module `tensorgrb.py` 
 The follow is the formulation to be constructed.
 
-$$x = 3$$
+\begin{align}
+\min_{i \in I} 
+\end{align}
