@@ -9,7 +9,7 @@ The other module `tensorgp.py` uses Gurobi's native matrix api. The construction
 The follow is the formulation to be constructed.
 
 $$
-\min_{i \in I} \iprod{C, X} \\
+\min \langle C, X \rangle\\
                A X^\intercal \leq b\\
                X \geq 0.
 $$
