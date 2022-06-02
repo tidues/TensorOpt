@@ -8,8 +8,8 @@ The other module `tensorgp.py` uses Gurobi's native matrix api. The construction
 ## Module `tensorgrb.py` 
 The follow is the formulation to be constructed.
 
-\begin{aligned}
+\begin{align}
 \min\quad \langle C, X \rangle + \text{diag}(B, Y)\\
                A X^\intercal \leq B^\intercal Y\\
                X, Y \geq 0.
-\end{aligned}
+\end{align}
