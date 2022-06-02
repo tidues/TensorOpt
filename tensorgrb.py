@@ -160,3 +160,35 @@ class Model:
         else:
             warnings.warn('Input "sense" should be =, >=, or <=.')
         return self.md.addConstr(con, name=cname)
+
+
+def main():
+    from tensorgrb import Model
+    import numpy as np
+    
+    # initalize input parameters
+    m = 5
+    n = 6
+    A = np.random.random((m, n))
+    B = np.random.random((m, m))
+    C = np.random.random((m, n))
+
+    # initialize model
+    md = Model('test')
+
+    # add variables
+    X = md.var((m, n), lb=0, name='X')
+    Y = md.var((m, m), lb=0, name='Y')
+
+    # add constraints
+    md.con(A @ X.T, '<=', B.T @ Y)
+
+    # add objective
+    md.obj((C * X).sum() + np.trace(B @ Y), minimize=True)
+
+    # solve model
+    print(md.solve())
+
+
+if __name__ == '__main__':
+    main()
