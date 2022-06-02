@@ -7,6 +7,7 @@ The other module `tensorgp.py` uses Gurobi's native matrix api. The construction
 
 ## Module `tensorgrb.py` 
 Suppose we want to construct the following formulation, where $\langle \cdot, \cdot \rangle$ is the Frobenius inner product, matrices $A, B, C, X, Y$ are of shapes $(m, n), (m, m), (m, n), (m, n), (m, m)$.
+
 $$
 \begin{align}
 \min & \quad \langle C, X \rangle + \text{trace}(BY)\\
@@ -14,6 +15,7 @@ $$
             & \quad X, Y \geq 0.
 \end{align}
 $$
+
 We can use the following code.
     from tensorgrb import Model
     import numpy as np
