@@ -44,5 +44,5 @@ We can use the following code.
 Note that the variables $X$ and $Y$ are essentially numpy arrays, so most numpy functions can be applied directly. To switch to Cplex, set `solver='cplex'` in the initialization step.
 
 ## Extend to Other Solvers
-Create a class similar to the GrbModel and CpxModel. Most functions in these classes only provide a one-line script to specify the syntax of some essential operations in the corresponding solver. Then, register for the new class in the Model class.
+Create a class similar to the GrbModel and CpxModel. Most functions in these classes only provide a one-line script to specify the syntax of some essential operations in the corresponding solver. Then, register the new class in the Model class.
 
