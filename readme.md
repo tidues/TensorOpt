@@ -1,6 +1,6 @@
 # An Interface for Optimization Solvers that is Compatible with Numpy Arrays
 
-Mathematical solvers, such as Cplex, Gurobi, and XPress, provide limited high-dimensional array maneuverability. This module provides a simple unified interface for various solvers (Gurobi and Cplex for now) where variables, constraints, and expressions can be used as standard numpy arrays. Also, you can switch the back-end solver by simply changing one parameter. Since most functionalities have been realized in the base class `BaseModel`, extending this interface to other solvers should be reasonably easy for experienced users. This module requires installing the corresponding solvers first.
+Mathematical solvers, such as Cplex, Gurobi, and XPress, provide limited high-dimensional array maneuverability. This module provides a simple unified interface for various solvers (Gurobi and Cplex for now) where variables, constraints, and expressions can be used as standard numpy arrays. Also, you can switch the back-end solver by changing one parameter. Since most functionalities have been realized in the base class `BaseModel`, extending this interface to other solvers should be reasonably easy for experienced users. This module requires installing the corresponding solvers first.
 
 ## Create and Solve an Optimization Model with Array Manipulations
 Suppose we want to construct the following formulation, where $\langle \cdot, \cdot \rangle$ is the Frobenius inner product, matrices $A, B, C, X, Y$ are of shapes $(m, n), (m, m), (m, n), (m, n), (m, m)$.
