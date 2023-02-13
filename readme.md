@@ -1,11 +1,8 @@
-# A Gurobi Wrapper that Supports Numpy Operations
+# A Multi-Dimensional Numpy Array Interface for Mathematical Optimization Solvers
 
-Module `tensorgrb.py` fully supports constructing, combining, manipulating Gurobi variables and constraints using numpy arrays. This interface is convenient for setting up matrix-based formulations. However, for super-large-size models, the current version is slow. 
+Mathematical solvers, such as Cplex, Gurobi, and XPress provide limited high-dimensional array maneuverability. This module provide a simple unified interface for various solvers (Gurobi and Cplex for now) where variables, constraints, and expressions can be used as normal numpy arrays. Also, you can switch the back-end solver by simply changing one parameter. Since most functionalities have been realized in the base class `BaseModel`, extending this interface to other solvers should be reasonably easy for experienced user. To use this module, you need to the corresponding solvers installed first.
 
-
-The other module `tensorgp.py` uses Gurobi's native matrix api. The construction time is much faster than `tensorgrb,py`, but the matrix operations are very limited and the syntax is somewhat cumbersome. 
-
-## Module `tensorgrb.py` 
+## Create and Solve an Optimization Model with Array Manipulations
 Suppose we want to construct the following formulation, where $\langle \cdot, \cdot \rangle$ is the Frobenius inner product, matrices $A, B, C, X, Y$ are of shapes $(m, n), (m, m), (m, n), (m, n), (m, m)$.
 
 $$
@@ -18,8 +15,7 @@ $$
 
 We can use the following code.
 
-
-    from tensorgrb import Model
+    from tensoropt import Model
     import numpy as np
     
     # initalize input parameters
@@ -29,8 +25,8 @@ We can use the following code.
     B = np.random.random((m, m))
     C = np.random.random((m, n))
 
-    # initialize model
-    md = Model('test')
+    # initialize model with back-end solver Gurobi
+    md = Model(solver='gurobi', name='test')
 
     # add variables
     X = md.var((m, n), lb=0, name='X')
@@ -40,9 +36,13 @@ We can use the following code.
     md.con(A @ X.T, '<=', B.T @ Y)
 
     # add objective
-    md.obj((C * X).sum() + np.trace(B @ Y), minimize=True)
+    md.obj((C * X).sum() + np.trace(B @ Y), 'min')
 
     # solve model
     print(md.solve())
 
-Note that the variables $X$ and $Y$ are essentially numpy arrays, so most numpy functions can be directly applied to them.
+Note that the variables $X$ and $Y$ are essentially numpy arrays, so most numpy functions can be directly applied to them. To switch to Cplex solver, simply set `solver='cplex'` in the initialization step.
+
+
+## Extend to Other Solvers
+Create a class similar to the GrbModel and CpxModel. Most functions in these classes only provide a one-line script to specify the syntax of some essential operations in the corresponding solver. Then, register the new class in the Model class.
