@@ -101,6 +101,8 @@ class GrbModel:
             params = {}
         else:
             params = {'name': name}
+
+        # add constraints
         if isinstance(exprs, GeneratorType):
             res = self.md.addConstrs(exprs, **params)
         else:
