@@ -101,12 +101,17 @@ class GrbModel:
             params = {}
         else:
             params = {'name': name}
-
         # add constraints
         if isinstance(exprs, GeneratorType):
             res = self.md.addConstrs(exprs, **params)
         else:
             res = self.md.addConstr(exprs, **params)
+            # if name == 'gamma_main':
+            #     self.md.write('md.lp')
+            #     self.md.update()
+            #     c = self.md.getConstrByName('gamma_main')
+            #     print(c)
+            #     exit(0)
         if name is not None and name != "":
             # only save the named constraints
             self.cons[name] = res
