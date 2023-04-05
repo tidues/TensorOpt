@@ -45,7 +45,7 @@ class GrbModel:
         self.considx = {}
 
     def var_val(self, mvars):
-        return mvars.getAttr('x')
+        return mvars.getAttr('X')
 
     def obj_val(self):
         return self.md.objVal
